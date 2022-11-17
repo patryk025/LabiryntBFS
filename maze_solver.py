@@ -1,12 +1,13 @@
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 import json
+from util.classes.Graph import Node
 from util.classes.Queue import Queue
 from util.neighboursFinder import findNeighbours
 from util.matrixToGraph import convertToGraph
 
 # załaduj pliki
-myfile = open('datasety/labirynt5x5.txt', 'r')
+myfile = open('datasety/labirynt100x100.txt', 'r')
 data = myfile.read().strip()
 mazeMatrix = json.loads(data)
 
@@ -41,8 +42,6 @@ def findStartParams(matrix):
     
     return starting_point, exit_point
 
-solved_path = []
-
 """
 def bfs(matrix, start):
     old_point = None
@@ -70,23 +69,38 @@ def bfs(matrix, start):
         old_point = point
 """
 
+solved_path = []
+
 # przeszukiwanie wszerz
 def bfs(graph, start, end):
     queue = Queue()
-    queue.add(start)
+    queue.add(graph.get(start))
 
     while not queue.is_empty():
-        point = graph.get(queue.remove())
+        point = queue.remove()
         if point.point == end:
+            print("Znaleziono rozwiązanie")
+            print("Dystans", point.getDistance())
+            
+            # odtwórz trasę
+            solved_path.append(end)
+            ancestor = graph.getAncestor(point.point)
+            while ancestor is not start:
+                solved_path.append(ancestor)
+                ancestor = graph.getAncestor(ancestor)
+            solved_path.append(start)
+            solved_path.reverse()
+            print("Trasa:", solved_path)
+
             return point.getDistance()
 
-        nodes = graph.get(point)
+        nodes = graph.getNodes(point.point)
         for node in nodes:
             if node not in queue.queue:
                 queue.add(node)
                 node.setDistance(point.getDistance() + 1)
 
-    pass
+    print("Brak rozwiązania :(")
 
 # zapisz parametry
 starting_point, exit_point = findStartParams(mazeMatrix)
@@ -116,6 +130,11 @@ cmap = LinearSegmentedColormap.from_list("", tuples)
 plt.imshow(mazeMatrix, cmap=cmap, norm=norm)
 
 # dorysuj wyznaczoną trasę
+x_coords = []
+y_coords = []
+for pos in solved_path:
+    x_coords.append(pos[0])
+    y_coords.append(pos[1])
 line_style = "ro--"
-plt.plot([2, 2, 3, 3], [4, 3, 3, 0], line_style, linewidth=2, markersize=12)
+plt.plot(x_coords, y_coords, line_style, linewidth=2, markersize=1)
 plt.show()
