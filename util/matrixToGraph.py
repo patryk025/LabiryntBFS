@@ -19,7 +19,8 @@ def convertToGraph(matrix, dimensions, start):
         neighbours = findNeighbours(matrix, dimensions, point, old_point)
 
         for neighbour in neighbours:
-            queueue.add(neighbour)
+            if neighbour not in queueue.queue:
+                queueue.add(neighbour)
         
         graph.set(point, neighbours)
 
