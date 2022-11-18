@@ -5,7 +5,7 @@ from util.classes.Queue import Queue
 from util.matrixToGraph import convertToGraph
 
 # załaduj pliki
-myfile = open('datasety/labirynt100x100.txt', 'r')
+myfile = open('datasety/labirynt1000x1000.txt', 'r')
 data = myfile.read().strip()
 mazeMatrix = json.loads(data)
 
@@ -39,6 +39,33 @@ def findStartParams(matrix):
         rowNo = rowNo + 1
     
     return starting_point, exit_point
+
+"""
+def bfs(matrix, start):
+    old_point = None
+
+    queue = Queue()
+
+    #main loop
+    queue.add(start)
+
+    while not queue.is_empty():
+        point = queue.remove()
+        x, y = point
+
+        print("Current point:", point)
+        neighbours = findNeighbours(matrix, dimensions, point, old_point)
+        print("Neighbours:", neighbours)
+        for neighbour in neighbours:
+            if neighbour not in queue.queue:
+                queue.add(neighbour)
+        
+        if matrix[y][x] == 0:
+            matrix[y][x] = 4
+        print("Queue:", queue.queue)
+        print()
+        old_point = point
+"""
 
 solved_path = []
 
@@ -87,6 +114,7 @@ graf = convertToGraph(mazeMatrix, dimensions, starting_point)
 #print(graf)
 
 bfs(graf, current_point, exit_point)
+#drawGraph(graf)
 
 # przydzielenie kolorków
 cvals  = range(5)
@@ -107,5 +135,5 @@ for pos in solved_path:
     x_coords.append(pos[0])
     y_coords.append(pos[1])
 line_style = "ro--"
-plt.plot(x_coords, y_coords, line_style, linewidth=2, markersize=1)
+plt.plot(x_coords, y_coords, line_style, linewidth=2, markersize=5)
 plt.show()
