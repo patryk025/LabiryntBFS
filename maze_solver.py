@@ -7,7 +7,7 @@ from util.neighboursFinder import findNeighbours
 from util.matrixToGraph import convertToGraph
 
 # załaduj pliki
-myfile = open('datasety/labirynt100x100.txt', 'r')
+myfile = open('datasety/labirynt1000x1000.txt', 'r')
 data = myfile.read().strip()
 mazeMatrix = json.loads(data)
 
@@ -41,6 +41,36 @@ def findStartParams(matrix):
         rowNo = rowNo + 1
     
     return starting_point, exit_point
+
+def drawGraph(graph):
+    queue = Queue()
+
+    start = list(graph.graph.keys())[0]
+
+    queue.add(graph.get(start))
+
+    point_list = []
+
+    while not queue.is_empty():
+        point = queue.remove()
+
+        point_list.append(point)
+
+        nodes = graph.getNodes(point.point)
+        for node in nodes:
+            if node not in queue.queue:
+                queue.add(node)
+                plt.plot([point.point[0], node.point[0]], [point.point[1], node.point[1]], color="black")
+
+    for node in point_list:
+        obj = node
+        plt.plot(obj.point[0], obj.point[1], 'o', color="white", markersize=40, markeredgewidth=1.5, markeredgecolor="black")
+        plt.text(obj.point[0], obj.point[1], str(obj.point)+"\ndist:"+str(obj.getDistance()), horizontalalignment='center', verticalalignment='center')
+
+    plt.xlim(-1, width-1)
+    plt.ylim(-1, height-1)
+    plt.gca().invert_yaxis()
+    plt.show()
 
 """
 def bfs(matrix, start):
@@ -116,6 +146,7 @@ graf = convertToGraph(mazeMatrix, dimensions, starting_point)
 #print(graf)
 
 bfs(graf, current_point, exit_point)
+#drawGraph(graf)
 
 # przydzielenie kolorków
 cvals  = range(5)
@@ -136,5 +167,5 @@ for pos in solved_path:
     x_coords.append(pos[0])
     y_coords.append(pos[1])
 line_style = "ro--"
-plt.plot(x_coords, y_coords, line_style, linewidth=2, markersize=1)
+plt.plot(x_coords, y_coords, line_style, linewidth=2, markersize=5)
 plt.show()
