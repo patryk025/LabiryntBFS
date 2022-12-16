@@ -72,7 +72,7 @@ class Graph:
 
         return string
     
-    def bfs(self, start, end):
+    def bfs(self, start, end, heuristic = False):
         old_point = self.point[1]
         self.point = (self.point[1], start)
     
@@ -96,7 +96,10 @@ class Graph:
 
                 return point.road, point.getDistance()
 
-            neighbours = findNeighbours(self.matrix, self.dimensions, point, old_point)
+            if heuristic is False:
+                neighbours = findNeighbours(self.matrix, self.dimensions, point, old_point)
+            else:
+                neighbours = findNeighbours(self.matrix, self.dimensions, point, old_point, end)
 
             self.set(point, neighbours)
 

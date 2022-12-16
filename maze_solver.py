@@ -61,7 +61,8 @@ graf = Graph(mazeMatrix, starting_point)
 #print(graf)
 
 # przeszukiwanie wszerz
-solved_path, distance = graf.bfs(Point(current_point), exit_point)
+#solved_path, distance = graf.bfs(Point(current_point), exit_point)
+solved_path, distance = graf.bfs(Point(current_point), exit_point, True)
 #drawGraph(graf)
 
 

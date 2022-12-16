@@ -1,6 +1,24 @@
-import random
+#import random
+import numpy as np
 
-def findNeighbours(matrix, dimensions, point, old_point):
+def calculateDistance(point, end):
+    p_x, p_y = point
+    e_x, e_y = end
+    return ( (p_x - e_x)**2 + (p_y - e_y)**2 )**0.5
+
+def angle_between(p1, p2):
+    ang1 = np.arctan2(*p1[::-1])
+    ang2 = np.arctan2(*p2[::-1])
+    angle = np.rad2deg((ang1 - ang2) % (2 * np.pi))
+    if angle < 180:
+        return angle
+    else:
+        return 360 - angle
+
+def calcAngleAndDist(p1, p2):
+    return calculateDistance(p1, p2), angle_between(p1, p2)
+
+def findNeighbours(matrix, dimensions, point, old_point, end = None):
     neighbours = []
 
     x, y = point.point
@@ -51,9 +69,19 @@ def findNeighbours(matrix, dimensions, point, old_point):
     else: #W
         neighbours = [neighbours[2], neighbours[3], neighbours[0], neighbours[1]]
 
-    random.shuffle(neighbours)
+    #random.shuffle(neighbours)
 
     while None in neighbours:
         neighbours.remove(None)
 
-    return neighbours
+    if end is not None:
+        tmp_list = []
+        for neighbour in neighbours:
+            dist, angle = calcAngleAndDist(neighbour, end)
+            tmp_list.append([neighbour, dist, angle])
+        
+        tmp_list = sorted(tmp_list, key = lambda x: (x[1], x[2]))
+
+        return [tmp_list[0][0]]
+    else:
+        return neighbours
