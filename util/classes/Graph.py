@@ -1,13 +1,27 @@
+from util.classes.Queue import Queue
+from util.neighboursFinder import findNeighbours
+
 class Graph:
-    def __init__(self, key = None):
+    def __init__(self, matrix, key = None):
         self.graph = {}
         self.node_list = {}
+        self.matrix = matrix
+        self.point = (None, None)
+        self.dimensions = (len(self.matrix), len(self.matrix[0]))
         
         if key is not None:
             self.insert(key)
+
+    def copy(self):
+        graph_copy = Graph(self.matrix)
+        graph_copy.graph = self.graph.copy()
+        graph_copy.node_list = self.node_list.copy()
+        graph_copy.point = self.point
+        graph_copy.dimensions = self.dimensions
+        return graph_copy
             
     def insert(self, key, root = None):
-        keyObj = Node(key)
+        keyObj = Point(key)
         if key not in self.graph:
             self.graph[key] = []
             self.node_list[key] = keyObj
@@ -22,7 +36,7 @@ class Graph:
             self.insert(key)
 
         for val in value:
-            node = Node(val)
+            node = Point(val)
             if distance is not None:
                 node.setDistance(distance)
             self.graph[key].append(node)
@@ -43,6 +57,12 @@ class Graph:
             self.insert(key)
 
         return self.graph[key]
+
+    def getNextElementToAnalyze(self, point):
+        copy_obj = self.copy()
+        copy_obj.point = point
+        copy_obj.insert(point)
+        return copy_obj
         
     def __str__(self):
         string = ""
@@ -52,22 +72,66 @@ class Graph:
 
         return string
     
-    def getAncestor(self, point):
-        for key in self.graph:
-            nodes = self.getNodes(key)
-            for node in nodes:
-                if node.point == point:
-                    return key
-        
-        return None
+    def bfs(self, start, end):
+        old_point = self.point[1]
+        self.point = (self.point[1], start)
+    
+        queue = Queue()
+        queue.add(self)
 
-class Node:
-    def __init__(self, point):
+        while not queue.is_empty():
+            graph = queue.remove()
+            point = graph.point
+
+            self.point = (old_point, point[1])
+
+            _, point = self.point
+            x, y = point.point
+            print(point.point)
+
+            if point.point == end:
+                print("Znaleziono rozwiązanie")
+                print("Dystans", point.getDistance())
+                print("Trasa:", point.road)
+
+                return point.road, point.getDistance()
+
+            neighbours = findNeighbours(self.matrix, self.dimensions, point, old_point)
+
+            self.set(point, neighbours)
+
+            if self.matrix[y][x] == 0:
+                self.matrix[y][x] = 4
+
+            for neighbour in neighbours:
+                if neighbour not in queue.queue:
+                    copy_obj = self.copy()
+                    new_road = point.road.copy()
+                    new_road.append(point)
+                    copy_obj.point = (point, Point(neighbour, new_road))
+                    queue.add(copy_obj)
+            
+            old_point = point
+
+        self.get(start).setDistance(0)
+
+class Point:
+    def __init__(self, point, road = None):
+        #print("Hitted Point constructor, debug: point => ", point, ", road => ", road)
         self.point = point
-        self.distance = None
+        if road is not None:
+            self.road = road
+        else:
+            self.road = []
 
     def setDistance(self, distance):
         self.distance = distance
 
     def getDistance(self):
-        return self.distance
+        return len(self.road);
+
+    def setRoad(self, road):
+        self.road = road
+
+    def getRoad(self):
+        return self.road

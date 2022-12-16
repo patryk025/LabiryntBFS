@@ -2,17 +2,21 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 import json
 from util.classes.Queue import Queue
-from util.matrixToGraph import convertToGraph
+from util.classes.Graph import Graph
+from util.classes.Graph import Point
+
+def loadJson(path):
+    fileHook = open(path, 'r')
+    dataLoaded = fileHook.read().strip()
+    loadedData = json.loads(dataLoaded)
+    return loadedData
 
 # załaduj pliki
-myfile = open('datasety/labirynt100x100.txt', 'r')
-data = myfile.read().strip()
-mazeMatrix = json.loads(data)
+mazeMatrix = loadJson('datasety/labirynt15x15.txt')
 
 # wyznacz parametry labiryntu
 height = len(mazeMatrix)
 width = len(mazeMatrix[0])
-dimensions = (height, width)
 
 """
 0 - nieodwiedzone, puste
@@ -23,7 +27,7 @@ dimensions = (height, width)
 """
 
 # znalezienie punktu wejścia i wyjścia
-def findStartParams(matrix):
+def findStartingParams(matrix):
     rowNo = 0
     colNo = 0
 
@@ -42,39 +46,8 @@ def findStartParams(matrix):
 
 solved_path = []
 
-# przeszukiwanie wszerz
-def bfs(graph, start, end):
-    queue = Queue()
-    queue.add(graph.get(start))
-
-    while not queue.is_empty():
-        point = queue.remove()
-        if point.point == end:
-            print("Znaleziono rozwiązanie")
-            print("Dystans", point.getDistance())
-            
-            # odtwórz trasę
-            solved_path.append(end)
-            ancestor = graph.getAncestor(point.point)
-            while ancestor is not start:
-                solved_path.append(ancestor)
-                ancestor = graph.getAncestor(ancestor)
-            solved_path.append(start)
-            solved_path.reverse()
-            print("Trasa:", solved_path)
-
-            return point.getDistance()
-
-        nodes = graph.getNodes(point.point)
-        for node in nodes:
-            if node not in queue.queue:
-                queue.add(node)
-                node.setDistance(point.getDistance() + 1)
-
-    print("Brak rozwiązania :(")
-
 # zapisz parametry
-starting_point, exit_point = findStartParams(mazeMatrix)
+starting_point, exit_point = findStartingParams(mazeMatrix)
     
 print("Starting point: ", starting_point)
 print("Exit point: ", exit_point)
@@ -83,10 +56,14 @@ print("Exit point: ", exit_point)
 current_point = starting_point
 
 # przetłumacz plik na postać grafu
-graf = convertToGraph(mazeMatrix, dimensions, starting_point)
+#graf = convertToGraph(mazeMatrix, dimensions, starting_point)
+graf = Graph(mazeMatrix, starting_point)
 #print(graf)
 
-bfs(graf, current_point, exit_point)
+# przeszukiwanie wszerz
+solved_path, distance = graf.bfs(Point(current_point), exit_point)
+#drawGraph(graf)
+
 
 # przydzielenie kolorków
 cvals  = range(5)
@@ -104,8 +81,11 @@ plt.imshow(mazeMatrix, cmap=cmap, norm=norm)
 x_coords = []
 y_coords = []
 for pos in solved_path:
-    x_coords.append(pos[0])
-    y_coords.append(pos[1])
+    point = pos.point
+    x_coords.append(point[0])
+    y_coords.append(point[1])
+x_coords.append(exit_point[0])
+y_coords.append(exit_point[1])
 line_style = "ro--"
 plt.plot(x_coords, y_coords, line_style, linewidth=2, markersize=1)
 plt.show()

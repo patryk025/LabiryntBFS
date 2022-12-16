@@ -1,7 +1,9 @@
+import random
+
 def findNeighbours(matrix, dimensions, point, old_point):
     neighbours = []
 
-    x, y = point
+    x, y = point.point
     height, width = dimensions
 
     if y - 1 >= 0:
@@ -34,7 +36,9 @@ def findNeighbours(matrix, dimensions, point, old_point):
         neighbours.append(None)
 
     if old_point is not None:
-        vector = (point[0] - old_point[0], point[1] - old_point[1])
+        tmp = old_point.point
+        tmp2 = point.point
+        vector = (tmp2[0] - tmp[0], tmp2[1] - tmp[1])
     else:
         vector = None
 
@@ -46,6 +50,8 @@ def findNeighbours(matrix, dimensions, point, old_point):
         neighbours = [neighbours[1], neighbours[2], neighbours[3], neighbours[0]]
     else: #W
         neighbours = [neighbours[2], neighbours[3], neighbours[0], neighbours[1]]
+
+    random.shuffle(neighbours)
 
     while None in neighbours:
         neighbours.remove(None)
