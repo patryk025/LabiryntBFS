@@ -4,6 +4,7 @@ import json
 from util.classes.Queue import Queue
 from util.classes.Graph import Graph
 from util.classes.Graph import Point
+from datetime import datetime
 
 def loadJson(path):
     fileHook = open(path, 'r')
@@ -12,7 +13,7 @@ def loadJson(path):
     return loadedData
 
 # załaduj pliki
-mazeMatrix = loadJson('datasety/labirynt15x15.txt')
+mazeMatrix = loadJson('datasety/labirynt100x100.txt')
 
 # wyznacz parametry labiryntu
 height = len(mazeMatrix)
@@ -60,11 +61,16 @@ current_point = starting_point
 graf = Graph(mazeMatrix, starting_point)
 #print(graf)
 
+start_time = datetime.now()
+
 # przeszukiwanie wszerz
-#solved_path, distance = graf.bfs(Point(current_point), exit_point)
-solved_path, distance = graf.bfs(Point(current_point), exit_point, True)
+solved_path, distance = graf.bfs(Point(current_point), exit_point)
 #drawGraph(graf)
 
+stop_time = datetime.now()
+
+print("Czas pracy algorytmu: "+str(stop_time-start_time))
+print("Złożoność pamięciowa: "+str(graf.biggest_queue_size))
 
 # przydzielenie kolorków
 cvals  = range(5)

@@ -10,3 +10,6 @@ class Queue:
 
     def is_empty(self):
         return len(self.queue) == 0
+
+    def size(self):
+        return len(self.queue)

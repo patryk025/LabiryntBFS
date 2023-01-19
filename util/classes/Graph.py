@@ -8,6 +8,7 @@ class Graph:
         self.matrix = matrix
         self.point = (None, None)
         self.dimensions = (len(self.matrix), len(self.matrix[0]))
+        self.biggest_queue_size = 0
         
         if key is not None:
             self.insert(key)
@@ -80,6 +81,9 @@ class Graph:
         queue.add(self)
 
         while not queue.is_empty():
+            if queue.size() > self.biggest_queue_size:
+                self.biggest_queue_size = queue.size()
+
             graph = queue.remove()
             point = graph.point
 
