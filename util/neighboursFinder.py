@@ -82,6 +82,9 @@ def findNeighbours(matrix, dimensions, point, old_point, end = None):
         
         tmp_list = sorted(tmp_list, key = lambda x: (x[1], x[2]))
 
-        return [tmp_list[0][0]]
+        try:
+            return [tmp_list[0][0]]
+        except:
+            raise Exception("Brak sąsiadów")
     else:
         return neighbours

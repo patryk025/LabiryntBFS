@@ -15,7 +15,7 @@ def loadJson(path):
     return loadedData
 
 # załaduj pliki
-mazeMatrix = loadJson('datasety/labirynt15x15.txt')
+mazeMatrix = loadJson('datasety/labirynt100x100.txt')
 
 # wyznacz parametry labiryntu
 height = len(mazeMatrix)
@@ -68,13 +68,20 @@ start_time = datetime.now()
 error = False
 # przeszukiwanie wszerz
 try:
-    solved_path, distance = graf.bfs(Point(current_point), exit_point)
+    #solved_path, distance = graf.bfs(Point(current_point), exit_point)
+    solved_path, distance = graf.bfs(Point(current_point), exit_point, True)
 except MemoryError:
     _, point = graf.point
     solved_path, distance = point.road, None
     error = True
     print("Błąd! Wypełniono całą dostępną pamięć RAM!")
     print("Stan na moment awarii:")
+except:
+    _, point = graf.point
+    solved_path, distance = point.road, None
+    error = True
+    print("Błąd! Algorytm niespodziewanie zakończył pracę")
+    print("Stan na moment błędu:")
 #drawGraph(graf)
 
 stop_time = datetime.now()
