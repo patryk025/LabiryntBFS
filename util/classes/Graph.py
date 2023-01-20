@@ -100,10 +100,24 @@ class Graph:
 
                 return point.road, point.getDistance()
 
-            if heuristic is False:
-                neighbours = findNeighbours(self.matrix, self.dimensions, point, old_point)
-            else:
-                neighbours = findNeighbours(self.matrix, self.dimensions, point, old_point, end)
+            is_in_dead_end = False
+            continue_check = True
+            while continue_check:
+                try:
+                    if heuristic is False:
+                        neighbours = findNeighbours(self.matrix, self.dimensions, point, old_point)
+                    else:
+                        neighbours = findNeighbours(self.matrix, self.dimensions, point, old_point, end)
+
+                    is_in_dead_end = False
+                except:
+                    is_in_dead_end = True
+                    point = point.road[-1]
+                    print("Trafiłem w ślepą uliczkę. Cofam się do ", point.point)
+                    pass
+
+                if not is_in_dead_end:
+                    continue_check = False
 
             self.set(point, neighbours)
 
