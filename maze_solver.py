@@ -5,6 +5,8 @@ from util.classes.Queue import Queue
 from util.classes.Graph import Graph
 from util.classes.Graph import Point
 from datetime import datetime
+from debugSize import getsize
+import numpy as np
 
 def loadJson(path):
     fileHook = open(path, 'r')
@@ -13,7 +15,7 @@ def loadJson(path):
     return loadedData
 
 # załaduj pliki
-mazeMatrix = loadJson('datasety/labirynt100x100.txt')
+mazeMatrix = loadJson('datasety/labirynt15x15.txt')
 
 # wyznacz parametry labiryntu
 height = len(mazeMatrix)
@@ -64,13 +66,18 @@ graf = Graph(mazeMatrix, starting_point)
 start_time = datetime.now()
 
 # przeszukiwanie wszerz
-solved_path, distance = graf.bfs(Point(current_point), exit_point)
+try:
+    solved_path, distance = graf.bfs(Point(current_point), exit_point)
+except MemoryError:
+    print("Błąd, wypełniono całą dostępną pamięć RAM")
+    print("Stan na moment awarii:")
 #drawGraph(graf)
 
 stop_time = datetime.now()
 
 print("Czas pracy algorytmu: "+str(stop_time-start_time))
-print("Złożoność pamięciowa: "+str(graf.biggest_queue_size))
+print("Długość najdłuższej kolejki: "+str(graf.biggest_queue_size))
+print("Pamięć zajęta przez obiekt: "+str(getsize(graf)))
 
 # przydzielenie kolorków
 cvals  = range(5)
@@ -93,6 +100,14 @@ for pos in solved_path:
     y_coords.append(point[1])
 x_coords.append(exit_point[0])
 y_coords.append(exit_point[1])
-line_style = "ro--"
-plt.plot(x_coords, y_coords, line_style, linewidth=2, markersize=1)
+
+u = np.diff(x_coords)
+v = np.diff(y_coords)
+pos_x = x_coords[:-1] + u/2
+pos_y = y_coords[:-1] + v/2
+norm = np.sqrt(u**2+v**2) 
+
+#line_style = "ro"
+#plt.plot(x_coords, y_coords, line_style, linewidth=2, markersize=1)
+plt.quiver(pos_x, pos_y, u/norm, v/norm, angles="xy", zorder=5, pivot="mid", color="red")
 plt.show()
