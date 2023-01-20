@@ -95,8 +95,8 @@ class Graph:
 
             if point.point == end:
                 print("Znaleziono rozwiązanie")
-                print("Dystans", point.getDistance())
                 print("Trasa:", point.road)
+                print("Dystans", point.getDistance())
 
                 return point.road, point.getDistance()
 

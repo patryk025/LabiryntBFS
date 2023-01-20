@@ -65,11 +65,15 @@ graf = Graph(mazeMatrix, starting_point)
 
 start_time = datetime.now()
 
+error = False
 # przeszukiwanie wszerz
 try:
     solved_path, distance = graf.bfs(Point(current_point), exit_point)
 except MemoryError:
-    print("Błąd, wypełniono całą dostępną pamięć RAM")
+    _, point = graf.point
+    solved_path, distance = point.road, None
+    error = True
+    print("Błąd! Wypełniono całą dostępną pamięć RAM!")
     print("Stan na moment awarii:")
 #drawGraph(graf)
 
@@ -107,7 +111,7 @@ pos_x = x_coords[:-1] + u/2
 pos_y = y_coords[:-1] + v/2
 norm = np.sqrt(u**2+v**2) 
 
-#line_style = "ro"
-#plt.plot(x_coords, y_coords, line_style, linewidth=2, markersize=1)
+line_style = "ro--"
+plt.plot(x_coords, y_coords, line_style, linewidth=2, markersize=1)
 plt.quiver(pos_x, pos_y, u/norm, v/norm, angles="xy", zorder=5, pivot="mid", color="red")
 plt.show()
