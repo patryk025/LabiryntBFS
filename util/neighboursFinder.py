@@ -1,4 +1,3 @@
-#import random
 import numpy as np
 
 def calculateDistance(point, end):
@@ -68,8 +67,6 @@ def findNeighbours(matrix, dimensions, point, old_point, end = None):
         neighbours = [neighbours[1], neighbours[2], neighbours[3], neighbours[0]]
     else: #W
         neighbours = [neighbours[2], neighbours[3], neighbours[0], neighbours[1]]
-
-    #random.shuffle(neighbours)
 
     while None in neighbours:
         neighbours.remove(None)
